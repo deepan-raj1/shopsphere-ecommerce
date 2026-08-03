@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Brand, Product
+from .models import Category, Brand, Product, ProductImage
 
 
 @admin.register(Category)
@@ -83,4 +83,28 @@ class ProductAdmin(admin.ModelAdmin):
     }
 
     list_per_page = 20
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "product",
+        "is_primary",
+        "created_at",
+    )
+
+    list_filter = (
+        "product",
+        "is_primary",
+        "created_at",
+    )
+
+    search_fields = (
+        "product__name",
+        "alt_text",
+    )
+
+    list_per_page = 20
+
 
