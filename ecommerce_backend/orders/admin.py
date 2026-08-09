@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Address, Order
+from .models import Address, Order, OrderItem
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
@@ -26,5 +26,22 @@ class OrderAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
     list_per_page = 20
+
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'product', 'product_name', 'product_sku',  'quantity', 'unit_price', 'subtotal', 'created_at',)
+
+    list_filter = ('created_at',)
+
+    search_fields = ('order__order_number', 'product__name', 'product_name', 'product_sku')
+
+    readonly_fields = ('created_at', 'updated_at')
+
+    ordering = ('-created_at',)
+
+    list_per_page = 20
+
 
 
