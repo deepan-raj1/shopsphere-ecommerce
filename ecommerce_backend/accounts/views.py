@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import (RegisterSerializer, LoginSerializer, ProfileSerializer,)
+from .serializers import (RegisterSerializer, LoginSerializer, ProfileSerializer, UpdateProfileSerializer)
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -27,4 +27,12 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = ProfileSerializer(request.user)
         return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UpdateProfileSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 

@@ -58,3 +58,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         read_only_fields = ('id', 'email', 'is_active', 'date_joined',)
 
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'phone_number',)
+
