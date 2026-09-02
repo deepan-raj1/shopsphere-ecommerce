@@ -1,11 +1,11 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Category
-from .serializers import CategorySerializer, CategoryCreateSerializer
+from .serializers import CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
@@ -28,4 +28,12 @@ class CategoryCreateView(CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryCreateSerializer
     permission_classes = [IsAuthenticated]
+
+class CategoryUpdateView(UpdateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Category.objects.all()
 
