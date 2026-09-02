@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import (RegisterSerializer, LoginSerializer, ProfileSerializer, UpdateProfileSerializer)
+from .serializers import (RegisterSerializer, LoginSerializer, ProfileSerializer, UpdateProfileSerializer, LogoutSerializer)
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -35,4 +35,14 @@ class ProfileView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User logged out successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
