@@ -49,3 +49,12 @@ class LoginSerializer(TokenObtainPairSerializer):
 
         return data
 
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        
+        fields = ('id', 'email', 'first_name', 'last_name', 'phone_number', 'is_active', 'date_joined',)
+
+        read_only_fields = ('id', 'email', 'is_active', 'date_joined',)
+

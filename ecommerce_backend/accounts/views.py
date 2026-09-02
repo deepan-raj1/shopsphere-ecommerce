@@ -1,10 +1,10 @@
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import (RegisterSerializer, LoginSerializer, ProfileSerializer,)
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -20,3 +20,11 @@ class RegisterView(APIView):
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = ProfileSerializer(request.user)
+        return Response(serializer.data)
+
