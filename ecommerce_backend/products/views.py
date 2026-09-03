@@ -53,3 +53,11 @@ class BrandListView(ListAPIView):
     def get_queryset(self):
         return Brand.objects.filter(is_active=True).order_by('name')
 
+class BrandDetailView(RetrieveAPIView):
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Brand.objects.filter(is_active=True)
+
