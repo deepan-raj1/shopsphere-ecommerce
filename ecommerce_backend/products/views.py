@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rest_framework.generics import (ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from .models import Category, Brand
-from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer)
+from .models import Category, Brand, Product
+from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer)
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
@@ -81,5 +81,13 @@ class BrandDeleteView(DestroyAPIView):
 
     def get_queryset(self):
         return Brand.objects.all()
+
+class ProductListView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True).select_related('category', 'brand')
 
 
