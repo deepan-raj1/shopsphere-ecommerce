@@ -91,3 +91,11 @@ class ProductListView(ListAPIView):
         return Product.objects.filter(is_active=True).select_related('category', 'brand')
 
 
+class ProductDetailView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True).select_related('category', 'brand')
+
