@@ -24,3 +24,9 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'slug', 'description', 'logo', 'is_active', 'created_at', 'updated_at')
 
 
+class BrandCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ('name', 'slug', 'description', 'logo', 'is_active')
+
+
