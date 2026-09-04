@@ -5,7 +5,7 @@ from rest_framework.generics import (ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Category, Brand, Product
-from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer)
+from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer)
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
@@ -104,4 +104,12 @@ class ProductCreateView(CreateAPIView):
 
     serializer_class = ProductCreateSerializer
     permission_classes = [IsAuthenticated]
+
+class ProductUpdateView(UpdateAPIView):
+
+    serializer_class = ProductUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Product.objects.all()
 
