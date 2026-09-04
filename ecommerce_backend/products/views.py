@@ -74,3 +74,12 @@ class BrandUpdateView(UpdateAPIView):
     def get_queryset(self):
         return Brand.objects.all()
 
+class BrandDeleteView(DestroyAPIView):
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Brand.objects.all()
+
+
