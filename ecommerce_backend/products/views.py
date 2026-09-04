@@ -113,3 +113,10 @@ class ProductUpdateView(UpdateAPIView):
     def get_queryset(self):
         return Product.objects.all()
 
+class ProductDeleteView(DestroyAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Product.objects.all()
+
