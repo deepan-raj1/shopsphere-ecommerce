@@ -3,7 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework.generics import (ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView)
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+
 
 from .models import Category, Brand, Product
 from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer)
@@ -88,7 +91,13 @@ class ProductListView(ListAPIView):
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
 
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+
+    filterset_fields = [
+        "category",
+        "brand",
+        "is_active",
+    ]
 
     search_fields = [
         "name",
