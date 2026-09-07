@@ -9,7 +9,7 @@ from rest_framework.filters import SearchFilter
 
 
 from .models import Category, Brand, Product, ProductImage
-from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer, ProductImageSerializer)
+from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer, ProductImageSerializer, ProductImageCreateSerializer)
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
@@ -149,4 +149,8 @@ class ProductImageListView(ListAPIView):
 
     def get_queryset(self):
         return ProductImage.objects.select_related('product')
+
+class ProductImageCreateView(CreateAPIView):
+    serializer_class = ProductImageCreateSerializer
+    permission_classes = [IsAuthenticated]
 
