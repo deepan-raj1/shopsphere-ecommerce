@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Brand, Product
+from .models import Category, Brand, Product, ProductImage
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -82,4 +82,12 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             "thumbnail",
             "is_active",
         )
+
+class ProductImageSerializer(serializers.ModelSerializer):
+
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
+    class Meta:
+        model = ProductImage
+        fields = ('id', 'product', 'product_name', 'image', 'alt_text', 'is_primary', 'created_at', )
 

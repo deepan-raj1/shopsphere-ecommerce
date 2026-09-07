@@ -8,8 +8,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 
 
-from .models import Category, Brand, Product
-from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer)
+from .models import Category, Brand, Product, ProductImage
+from .serializers import (CategorySerializer, CategoryCreateSerializer, CategoryUpdateSerializer, BrandSerializer, BrandCreateSerializer, BrandUpdateSerializer, ProductSerializer, ProductCreateSerializer, ProductUpdateSerializer, ProductImageSerializer)
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
@@ -140,4 +140,13 @@ class ProductDeleteView(DestroyAPIView):
 
     def get_queryset(self):
         return Product.objects.all()
+
+
+class ProductImageListView(ListAPIView):
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return ProductImage.objects.select_related('product')
 
