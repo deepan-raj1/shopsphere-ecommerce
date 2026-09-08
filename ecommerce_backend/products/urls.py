@@ -18,8 +18,8 @@ from .views import (
     ProductDeleteView, 
     ProductImageListView, 
     ProductImageCreateView,
-    ProductImageDetailView
-
+    ProductImageDetailView,
+    ProductImageDeleteView
 )
 
 urlpatterns = [
@@ -41,6 +41,7 @@ urlpatterns = [
     path('images/', ProductImageListView.as_view(), name='product-image-list'),
     path('images/create/', ProductImageCreateView.as_view(), name='product-image-create'),
     path('images/<int:pk>/', ProductImageDetailView.as_view(), name='product-image-detail'),
+    path('images/<int:pk>/delete/', ProductImageDeleteView.as_view(), name='product-image-delete'),
 ]
 
 

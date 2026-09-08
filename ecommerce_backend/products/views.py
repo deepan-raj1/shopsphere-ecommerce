@@ -162,3 +162,10 @@ class ProductImageDetailView(RetrieveAPIView):
     def get_queryset(self):
         return ProductImage.objects.select_related('product')
 
+class ProductImageDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ProductImage.objects.all()
+
+    
