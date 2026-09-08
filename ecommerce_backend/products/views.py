@@ -154,3 +154,11 @@ class ProductImageCreateView(CreateAPIView):
     serializer_class = ProductImageCreateSerializer
     permission_classes = [IsAuthenticated]
 
+class ProductImageDetailView(RetrieveAPIView):
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return ProductImage.objects.select_related('product')
+
