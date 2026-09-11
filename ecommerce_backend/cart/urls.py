@@ -3,7 +3,8 @@ from .views import (
     CartDetailView, 
     AddToCartView,
     UpdateCartItemView,
-    RemoveCartItemView
+    RemoveCartItemView,
+    ClearCartView
 )
 
 urlpatterns = [
@@ -26,6 +27,11 @@ urlpatterns = [
     "items/<int:pk>/delete/",
     RemoveCartItemView.as_view(),
     name="remove-cart-item"
+    ),
+    path(
+        "clear/",
+        ClearCartView.as_view(),
+        name="clear-cart"
     ),
 ]
 

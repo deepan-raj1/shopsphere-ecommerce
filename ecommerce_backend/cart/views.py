@@ -5,6 +5,7 @@ from rest_framework.generics import RetrieveAPIView, GenericAPIView, CreateAPIVi
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 from .models import Cart, CartItem
 from .serializers import CartSerializer, AddToCartSerializer, UpdateCartItemSerializer
@@ -104,4 +105,24 @@ class RemoveCartItemView(DestroyAPIView):
             cart__user=self.request.user
         )
 
+
+class ClearCartView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+
+        cart, created = Cart.objects.get_or_create(
+            user=request.user
+        )
+
+        deleted_count, _ = cart.items.all().delete()
+
+        return Response(
+            {
+                "message": "Cart cleared successfully.",
+                "deleted_items": deleted_count
+            },
+            status=status.HTTP_200_OK
+        )
 
