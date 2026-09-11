@@ -70,3 +70,7 @@ class AddToCartSerializer(serializers.Serializer):
         return value
 
 
+class UpdateCartItemSerializer(serializers.Serializer):
+
+    quantity = serializers.IntegerField(min_value=1)
+

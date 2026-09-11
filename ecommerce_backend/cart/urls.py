@@ -1,5 +1,9 @@
 from django.urls import path
-from .views import CartDetailView, AddToCartView
+from .views import (
+    CartDetailView, 
+    AddToCartView,
+    UpdateCartItemView
+)
 
 urlpatterns = [
     path(
@@ -12,4 +16,10 @@ urlpatterns = [
         AddToCartView.as_view(),
         name="add-to-cart"
     ),
+    path(
+    "items/<int:pk>/update/",
+    UpdateCartItemView.as_view(),
+    name="update-cart-item"
+    ),
 ]
+
