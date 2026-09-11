@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.generics import RetrieveAPIView, GenericAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, GenericAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -92,6 +92,16 @@ class UpdateCartItemView(UpdateAPIView):
                 "message": "Cart item updated successfully.",
                 "quantity": cart_item.quantity
             }
+        )
+
+
+class RemoveCartItemView(DestroyAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return CartItem.objects.filter(
+            cart__user=self.request.user
         )
 
 
