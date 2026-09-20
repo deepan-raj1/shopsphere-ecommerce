@@ -6,40 +6,20 @@ from .views import (
     RemoveCartItemView,
     ClearCartView,
     WishlistDetailView,
+    AddToWishlistView,
 )
 
 urlpatterns = [
-    path(
-        "",
-        CartDetailView.as_view(),
-        name="cart-detail"
-    ),
-    path(
-        "add/",
-        AddToCartView.as_view(),
-        name="add-to-cart"
-    ),
-    path(
-    "items/<int:pk>/update/",
-    UpdateCartItemView.as_view(),
-    name="update-cart-item"
-    ),
-    path(
-    "items/<int:pk>/delete/",
-    RemoveCartItemView.as_view(),
-    name="remove-cart-item"
-    ),
-    path(
-        "clear/",
-        ClearCartView.as_view(),
-        name="clear-cart"
-    ),
-    path(
-        "wishlist/",
-        WishlistDetailView.as_view(),
-        name="wishlist-detail"
-    ),
+    path("", CartDetailView.as_view(), name="cart-detail"),
+    path("add/", AddToCartView.as_view(), name="add-to-cart"),
+    path("items/<int:pk>/update/", UpdateCartItemView.as_view(), name="update-cart-item"),
+    path("items/<int:pk>/delete/", RemoveCartItemView.as_view(), name="remove-cart-item"),
+    path("clear/", ClearCartView.as_view(), name="clear-cart"),
+    path("wishlist/", WishlistDetailView.as_view(), name="wishlist-detail"),
+    path("wishlist/add/", AddToWishlistView.as_view(), name="add-to-wishlist"),
 ]
+
+
 
 
 

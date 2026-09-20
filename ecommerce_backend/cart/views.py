@@ -7,8 +7,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from .models import Cart, CartItem, Wishlist
-from .serializers import CartSerializer, AddToCartSerializer, UpdateCartItemSerializer, WishlistSerializer
+from .models import Cart, CartItem, Wishlist, WishlistItem
+from .serializers import CartSerializer, AddToCartSerializer, UpdateCartItemSerializer, WishlistItemSerializer, WishlistSerializer, AddToWishlistSerializer
 from products.models import Product
 
 class CartDetailView(RetrieveAPIView):
@@ -138,5 +138,50 @@ class WishlistDetailView(RetrieveAPIView):
         )
 
         return wishlist
+
+
+class AddToWishlistView(GenericAPIView):
+
+    serializer_class = AddToWishlistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        product = Product.objects.get(
+            id=serializer.validated_data["product_id"]
+        )
+
+        wishlist, created = Wishlist.objects.get_or_create(
+            user=request.user
+        )
+
+        wishlist_item, created = WishlistItem.objects.get_or_create(
+            wishlist=wishlist,
+            product=product
+        )
+
+        if not created:
+            return Response(
+                {
+                    "message": "Product already exists in wishlist."
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {
+                "message": "Product added to wishlist successfully."
+            },
+            status=status.HTTP_201_CREATED
+        )
+
 
 
