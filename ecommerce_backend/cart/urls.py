@@ -7,7 +7,8 @@ from .views import (
     ClearCartView,
     WishlistDetailView,
     AddToWishlistView,
-    RemoveFromWishlistView
+    RemoveFromWishlistView,
+    ClearWishlistView
 )
 
 urlpatterns = [
@@ -19,7 +20,10 @@ urlpatterns = [
     path("wishlist/", WishlistDetailView.as_view(), name="wishlist-detail"),
     path("wishlist/add/", AddToWishlistView.as_view(), name="add-to-wishlist"),
     path("wishlist/items/<int:pk>/delete/", RemoveFromWishlistView.as_view(), name="remove-from-wishlist"),
+    path("wishlist/clear/", ClearWishlistView.as_view(), name="clear-wishlist"),
 ]
+
+
 
 
 

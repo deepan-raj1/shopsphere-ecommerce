@@ -193,4 +193,25 @@ class RemoveFromWishlistView(DestroyAPIView):
             wishlist__user=self.request.user
         )
 
+class ClearWishlistView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+
+        wishlist, created = Wishlist.objects.get_or_create(
+            user=request.user
+        )
+
+        deleted_count, _ = wishlist.items.all().delete()
+
+        return Response(
+            {
+                "message": "Wishlist cleared successfully.",
+                "deleted_items": deleted_count
+            },
+            status=status.HTTP_200_OK
+        )
+
+
 
