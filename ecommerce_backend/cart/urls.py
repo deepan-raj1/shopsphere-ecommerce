@@ -4,7 +4,8 @@ from .views import (
     AddToCartView,
     UpdateCartItemView,
     RemoveCartItemView,
-    ClearCartView
+    ClearCartView,
+    WishlistDetailView,
 )
 
 urlpatterns = [
@@ -33,7 +34,13 @@ urlpatterns = [
         ClearCartView.as_view(),
         name="clear-cart"
     ),
+    path(
+        "wishlist/",
+        WishlistDetailView.as_view(),
+        name="wishlist-detail"
+    ),
 ]
+
 
 
 

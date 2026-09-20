@@ -7,8 +7,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from .models import Cart, CartItem
-from .serializers import CartSerializer, AddToCartSerializer, UpdateCartItemSerializer
+from .models import Cart, CartItem, Wishlist
+from .serializers import CartSerializer, AddToCartSerializer, UpdateCartItemSerializer, WishlistSerializer
 from products.models import Product
 
 class CartDetailView(RetrieveAPIView):
@@ -125,4 +125,18 @@ class ClearCartView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class WishlistDetailView(RetrieveAPIView):
+
+    serializer_class = WishlistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+
+        wishlist, created = Wishlist.objects.get_or_create(
+            user=self.request.user
+        )
+
+        return wishlist
+
 
