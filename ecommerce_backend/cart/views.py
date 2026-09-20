@@ -184,4 +184,13 @@ class AddToWishlistView(GenericAPIView):
         )
 
 
+class RemoveFromWishlistView(DestroyAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return WishlistItem.objects.filter(
+            wishlist__user=self.request.user
+        )
+
 
