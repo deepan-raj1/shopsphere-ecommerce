@@ -29,3 +29,20 @@ class AddressSerializer(serializers.ModelSerializer):
         )
 
 
+class AddressCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Address
+
+        fields = (
+            "full_name",
+            "phone_number",
+            "address_line1",
+            "address_line2",
+            "city",
+            "state",
+            "postal_code",
+            "country",
+            "is_default",
+        )
+
