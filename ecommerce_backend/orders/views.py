@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
@@ -7,6 +7,9 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Address
 from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 class AddressListView(ListAPIView):
 
@@ -80,6 +83,34 @@ class AddressDeleteView(DestroyAPIView):
     def get_queryset(self):
         return Address.objects.filter(
             user=self.request.user
+        )
+
+
+class SetDefaultAddressView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+
+        address = get_object_or_404(
+            Address,
+            pk=pk,
+            user=request.user
+        )
+
+        Address.objects.filter(
+            user=request.user,
+            is_default=True
+        ).update(is_default=False)
+
+        address.is_default = True
+        address.save()
+
+        return Response(
+            {
+                "message": "Default address updated successfully."
+            },
+            status=status.HTTP_200_OK
         )
 
 
