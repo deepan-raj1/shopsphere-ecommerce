@@ -73,3 +73,13 @@ class AddressUpdateView(UpdateAPIView):
 
 
 
+class AddressDeleteView(DestroyAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(
+            user=self.request.user
+        )
+
+
