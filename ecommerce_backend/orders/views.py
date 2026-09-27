@@ -4,8 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Address
-from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer
+from cart.models import Cart
+from .models import Address, Order, OrderItem
+from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer, CreateOrderSerializer
+
+from decimal import Decimal
+from uuid import uuid4
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -114,3 +118,110 @@ class SetDefaultAddressView(APIView):
         )
 
 
+class CreateOrderView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        serializer = CreateOrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        shipping_address_id = serializer.validated_data[
+            "shipping_address_id"
+        ]
+
+        notes = serializer.validated_data.get(
+            "notes",
+            ""
+        )
+
+        try:
+            address = Address.objects.get(
+                id=shipping_address_id,
+                user=request.user
+            )
+        except Address.DoesNotExist:
+            return Response(
+                {
+                    "error": "Invalid shipping address."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        cart = Cart.objects.filter(
+            user=request.user
+        ).first()
+
+        if not cart or not cart.items.exists():
+            return Response(
+                {
+                    "error": "Cart is empty."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        subtotal = Decimal("0.00")
+
+        for item in cart.items.all():
+
+            price = (
+                item.product.discount_price
+                or item.product.price
+            )
+
+            subtotal += price * item.quantity
+
+        shipping_cost = Decimal("0.00")
+        tax = Decimal("0.00")
+        discount = Decimal("0.00")
+
+        total_amount = (
+            subtotal
+            + shipping_cost
+            + tax
+            - discount
+        )
+
+        order = Order.objects.create(
+            user=request.user,
+            shipping_address=address,
+            order_number=uuid4().hex[:12].upper(),
+            subtotal=subtotal,
+            shipping_cost=shipping_cost,
+            tax=tax,
+            discount=discount,
+            total_amount=total_amount,
+            notes=notes,
+        )
+
+        for item in cart.items.all():
+
+            price = (
+                item.product.discount_price
+                or item.product.price
+            )
+
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                product_name=item.product.name,
+                product_sku=item.product.sku,
+                quantity=item.quantity,
+                unit_price=price,
+                subtotal=price * item.quantity,
+            )
+
+        cart.items.all().delete()
+
+        return Response(
+            {
+                "message": "Order created successfully.",
+                "order_id": order.id,
+                "order_number": order.order_number,
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+
+    

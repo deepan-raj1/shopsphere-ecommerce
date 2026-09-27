@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Address
+from .models import Address, Order
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -63,4 +63,12 @@ class AddressUpdateSerializer(serializers.ModelSerializer):
             "is_default",
         )
 
-        
+class CreateOrderSerializer(serializers.Serializer):
+
+    shipping_address_id = serializers.IntegerField()
+
+    notes = serializers.CharField(
+        required=False,
+        allow_blank=True
+    )
+
