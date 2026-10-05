@@ -6,7 +6,8 @@ from .views import (
     AddressUpdateView,
     AddressDeleteView,
     SetDefaultAddressView,
-    CreateOrderView
+    CreateOrderView,
+    OrderListView
     )
 
 urlpatterns = [
@@ -17,7 +18,10 @@ urlpatterns = [
     path("addresses/<int:pk>/delete/", AddressDeleteView.as_view(), name="address-delete"),
     path("addresses/<int:pk>/set-default/", SetDefaultAddressView.as_view(), name="set-default-address"),
     path("create/", CreateOrderView.as_view(), name="create-order"),
+    path("", OrderListView.as_view(), name="order-list"),
 ]
+
+
 
 
 

@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from cart.models import Cart
 from .models import Address, Order, OrderItem
-from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer, CreateOrderSerializer
+from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer, CreateOrderSerializer, OrderListSerializer
 
 from decimal import Decimal
 from uuid import uuid4
@@ -224,4 +224,13 @@ class CreateOrderView(APIView):
         )
 
 
-    
+class OrderListView(ListAPIView):
+    serializer_class = OrderListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(
+            user=self.request.user
+        ).order_by("-created_at")
+
+
