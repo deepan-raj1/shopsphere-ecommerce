@@ -243,4 +243,43 @@ class OrderDetailView(RetrieveAPIView):
             user=self.request.user
         )
 
+class CancelOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            order = Order.objects.get(
+                id=pk,
+                user=request.user
+            )
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if order.status not in ["pending", "confirmed"]:
+            return Response(
+                {
+                    "detail": (
+                        f"Order cannot be cancelled because its "
+                        f"current status is '{order.status}'."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order.status = "cancelled"
+        order.save(update_fields=["status", "updated_at"])
+
+        return Response(
+            {
+                "message": "Order cancelled successfully.",
+                "order_id": order.id,
+                "order_number": order.order_number,
+                "status": order.status
+            },
+            status=status.HTTP_200_OK
+        )
+
 
