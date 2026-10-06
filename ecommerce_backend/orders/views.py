@@ -6,7 +6,15 @@ from rest_framework.permissions import IsAuthenticated
 
 from cart.models import Cart
 from .models import Address, Order, OrderItem
-from .serializers import AddressSerializer, AddressCreateSerializer, AddressUpdateSerializer, CreateOrderSerializer, OrderListSerializer, OrderDetailSerializer
+from .serializers import (
+    AddressSerializer, 
+    AddressCreateSerializer, 
+    AddressUpdateSerializer, 
+    CreateOrderSerializer, 
+    OrderListSerializer, 
+    OrderDetailSerializer,
+    OrderStatusUpdateSerializer
+)
 
 from decimal import Decimal
 from uuid import uuid4
@@ -282,4 +290,43 @@ class CancelOrderView(APIView):
             status=status.HTTP_200_OK
         )
 
+
+class AdminOrderStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        if not request.user.is_staff:
+            return Response(
+                {"detail": "Admin access required."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            order = Order.objects.get(id=pk)
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = OrderStatusUpdateSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order.status = serializer.validated_data["status"]
+        order.save(update_fields=["status", "updated_at"])
+
+        return Response(
+            {
+                "message": "Order status updated successfully.",
+                "order_id": order.id,
+                "order_number": order.order_number,
+                "status": order.status,
+            },
+            status=status.HTTP_200_OK
+        )
 

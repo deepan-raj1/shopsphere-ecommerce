@@ -112,3 +112,15 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class OrderStatusUpdateSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(
+        choices=[
+            "pending",
+            "confirmed",
+            "processing",
+            "shipped",
+            "delivered",
+            "cancelled",
+        ]
+    )
+
