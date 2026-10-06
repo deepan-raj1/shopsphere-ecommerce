@@ -22,3 +22,20 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         return value
 
 
+class ReviewListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = (
+            "id",
+            "product",
+            "user",
+            "rating",
+            "title",
+            "comment",
+            "is_verified_purchase",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = fields
+
+

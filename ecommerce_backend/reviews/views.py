@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Review
-from .serializers import ReviewCreateSerializer
+from .serializers import ReviewCreateSerializer, ReviewListSerializer
+
+from rest_framework.generics import ListAPIView
 
 
 class CreateReviewView(APIView):
@@ -47,5 +49,24 @@ class CreateReviewView(APIView):
             },
             status=status.HTTP_201_CREATED
         )
+
+
+class ReviewListView(ListAPIView):
+    serializer_class = ReviewListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Review.objects.filter(
+            is_active=True
+        ).order_by("-created_at")
+
+        product_id = self.request.query_params.get("product")
+
+        if product_id:
+            queryset = queryset.filter(
+                product_id=product_id
+            )
+
+        return queryset
 
 
