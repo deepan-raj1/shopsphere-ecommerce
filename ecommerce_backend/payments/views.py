@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Payment
-from .serializers import PaymentCreateSerializer, PaymentListSerializer
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from .serializers import PaymentCreateSerializer, PaymentListSerializer, PaymentStatusUpdateSerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 
 class CreatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -78,4 +78,40 @@ class PaymentDetailView(RetrieveAPIView):
         return Payment.objects.filter(
             order__user=self.request.user
         )
+
+
+class PaymentStatusUpdateView(UpdateAPIView):
+    serializer_class = PaymentStatusUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Payment.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response(
+                {"detail": "Admin access required."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        payment = self.get_object()
+
+        serializer = self.get_serializer(
+            payment,
+            data=request.data,
+            partial=True
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {
+                "message": "Payment status updated successfully.",
+                "payment_id": payment.id,
+                "status": payment.status
+            },
+            status=status.HTTP_200_OK
+        )
+
 
