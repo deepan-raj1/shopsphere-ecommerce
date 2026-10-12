@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from .models import Review
 from .serializers import ReviewCreateSerializer, ReviewListSerializer
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 
 class CreateReviewView(APIView):
@@ -69,4 +69,13 @@ class ReviewListView(ListAPIView):
 
         return queryset
 
+
+class ReviewDetailView(RetrieveAPIView):
+    serializer_class = ReviewListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Review.objects.filter(
+            is_active=True
+        )
 
