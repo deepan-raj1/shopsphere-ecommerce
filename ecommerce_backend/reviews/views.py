@@ -7,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Review
-from .serializers import ReviewCreateSerializer, ReviewListSerializer
+from .serializers import ReviewCreateSerializer, ReviewListSerializer, ReviewUpdateSerializer
 
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 
 
 class CreateReviewView(APIView):
@@ -76,6 +76,16 @@ class ReviewDetailView(RetrieveAPIView):
 
     def get_queryset(self):
         return Review.objects.filter(
+            is_active=True
+        )
+
+class ReviewUpdateView(UpdateAPIView):
+    serializer_class = ReviewUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Review.objects.filter(
+            user=self.request.user,
             is_active=True
         )
 
