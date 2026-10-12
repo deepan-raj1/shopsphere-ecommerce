@@ -89,3 +89,11 @@ class ReviewUpdateView(UpdateAPIView):
             is_active=True
         )
 
+class ReviewDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Review.objects.filter(
+            user=self.request.user
+        )
+
