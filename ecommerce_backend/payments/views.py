@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Payment
-from .serializers import PaymentCreateSerializer
-
+from .serializers import PaymentCreateSerializer, PaymentListSerializer
+from rest_framework.generics import ListAPIView
 
 class CreatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -59,4 +59,13 @@ class CreatePaymentView(APIView):
             },
             status=status.HTTP_201_CREATED
         )
+
+class PaymentListView(ListAPIView):
+    serializer_class = PaymentListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Payment.objects.filter(
+            order__user=self.request.user
+        ).order_by("-created_at")
 
