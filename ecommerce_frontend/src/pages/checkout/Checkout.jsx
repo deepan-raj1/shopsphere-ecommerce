@@ -2,8 +2,47 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useShop } from "../../context/ShopContext";
 
+const initialAddresses = [
+  {
+    id: 1,
+    fullName: "Deepan Raj",
+    phoneNumber: "9876543210",
+    addressLine1: "123 Main Street",
+    addressLine2: "Velachery",
+    city: "Chennai",
+    state: "Tamil Nadu",
+    postalCode: "600042",
+    country: "India",
+    isDefault: true,
+  },
+  {
+    id: 2,
+    fullName: "Deepan Raj",
+    phoneNumber: "9876543210",
+    addressLine1: "456 Anna Nagar",
+    addressLine2: "Near Tower Park",
+    city: "Chennai",
+    state: "Tamil Nadu",
+    postalCode: "600040",
+    country: "India",
+    isDefault: false,
+  },
+];
+
 function Checkout() {
   const { cartItems } = useShop();
+
+  const [addresses, setAddresses] = useState(initialAddresses);
+
+  const [selectedAddressId, setSelectedAddressId] = useState(
+    initialAddresses.find((address) => address.isDefault)?.id ||
+      initialAddresses[0]?.id ||
+      null
+  );
+
+  const [showAddressForm, setShowAddressForm] = useState(false);
+
+  const [paymentMethod, setPaymentMethod] = useState("cod");
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -16,390 +55,452 @@ function Checkout() {
 
   const total = subtotal + shipping + tax - discount;
 
-  const initialAddresses = [
-    {
-        id: 1,
-        fullName: "Deepan Raj",
-        phoneNumber: "9876543210",
-        addressLine1: "123 Main Street",
-        addressLine2: "Velachery",
-        city: "Chennai",
-        state: "Tamil Nadu",
-        postalCode: "600042",
-        country: "India",
-        isDefault: true,
-    },
-    {
-        id: 2,
-        fullName: "Deepan Raj",
-        phoneNumber: "9876543210",
-        addressLine1: "456 Anna Nagar",
-        addressLine2: "Near Tower Park",
-        city: "Chennai",
-        state: "Tamil Nadu",
-        postalCode: "600040",
-        country: "India",
-        isDefault: false,
-    },
-];
-  const [addresses, setAddresses] = useState(initialAddresses);  
-  const [selectedAddressId, setSelectedAddressId] = useState(initialAddresses.find((address) => address.isDefault)?.id || initialAddresses[0]?.id || null);
-  const [showAddressForm, setShowAddressForm] = useState(false);
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-
+    <div className="mx-auto max-w-7xl px-4 py-12">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Checkout
-        </h1>
+        <h1 className="text-3xl font-bold">Checkout</h1>
 
-        <p className="text-gray-600 mt-2">
+        <p className="mt-2 text-gray-600">
           Complete your details to place your order.
         </p>
       </div>
 
       {cartItems.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Checkout Form */}
-          <div className="lg:col-span-2 space-y-6">
-
+          <div className="space-y-6 lg:col-span-2">
             {/* Customer Information */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-
-              <h2 className="text-xl font-bold mb-6">
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-6 text-xl font-bold">
                 Customer Information
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 {/* Full Name */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="mb-2 block text-sm font-medium">
                     Full Name
                   </label>
 
                   <input
                     type="text"
                     placeholder="Enter your full name"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="mb-2 block text-sm font-medium">
                     Email Address
                   </label>
 
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="mb-2 block text-sm font-medium">
                     Phone Number
                   </label>
 
                   <input
                     type="tel"
                     placeholder="Enter your phone number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-
               </div>
-
             </div>
 
             {/* Shipping Address */}
-            {/* Shipping Address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">
-                Shipping Address
-                </h2>
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold">Shipping Address</h2>
 
                 {!showAddressForm && (
-                <button
+                  <button
                     type="button"
                     onClick={() => setShowAddressForm(true)}
-                    className="text-blue-600 font-medium hover:text-blue-800"
-                >
+                    className="font-medium text-blue-600 hover:text-blue-800"
+                  >
                     + Add New Address
-                </button>
+                  </button>
                 )}
-            </div>
+              </div>
 
-            {/* Saved Addresses */}
-            {!showAddressForm && (
+              {/* Saved Addresses */}
+              {!showAddressForm && (
                 <div className="space-y-4">
-
-                {addresses.map((address) => (
+                  {addresses.map((address) => (
                     <div
-                    key={address.id}
-                    onClick={() => setSelectedAddressId(address.id)}
-                    className={`relative cursor-pointer rounded-lg border p-5 ${
+                      key={address.id}
+                      onClick={() => setSelectedAddressId(address.id)}
+                      className={`relative cursor-pointer rounded-lg border p-5 ${
                         selectedAddressId === address.id
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-300"
-                    }`}
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-300"
+                      }`}
                     >
-
-                    {/* Radio */}
-                    <div className="flex items-start gap-4">
-
+                      <div className="flex items-start gap-4">
+                        {/* Radio */}
                         <input
-                        type="radio"
-                        name="shippingAddress"
-                        checked={selectedAddressId === address.id}
-                        onChange={() =>
+                          type="radio"
+                          name="shippingAddress"
+                          checked={selectedAddressId === address.id}
+                          onChange={() =>
                             setSelectedAddressId(address.id)
-                        }
-                        className="mt-1 h-4 w-4"
+                          }
+                          className="mt-1 h-4 w-4"
                         />
 
                         <div className="flex-1">
-
-                        {/* Name & Default */}
-                        <div className="flex items-center gap-3">
-
+                          {/* Name & Default */}
+                          <div className="flex items-center gap-3">
                             <h3 className="font-semibold">
-                            {address.fullName}
+                              {address.fullName}
                             </h3>
 
                             {address.isDefault && (
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
                                 Default
-                            </span>
+                              </span>
                             )}
+                          </div>
 
-                        </div>
-
-                        {/* Phone */}
-                        <p className="mt-2 text-gray-600">
+                          {/* Phone */}
+                          <p className="mt-2 text-gray-600">
                             {address.phoneNumber}
-                        </p>
+                          </p>
 
-                        {/* Address */}
-                        <p className="mt-2 text-gray-600">
+                          {/* Address */}
+                          <p className="mt-2 text-gray-600">
                             {address.addressLine1}
                             {address.addressLine2 &&
-                            `, ${address.addressLine2}`}
+                              `, ${address.addressLine2}`}
                             , {address.city}, {address.state} -{" "}
                             {address.postalCode}
-                        </p>
+                          </p>
 
-                        <p className="mt-1 text-gray-600">
+                          <p className="mt-1 text-gray-600">
                             {address.country}
-                        </p>
-
+                          </p>
                         </div>
-
+                      </div>
                     </div>
-
-                    </div>
-                ))}
-
+                  ))}
                 </div>
-            )}
+              )}
 
-            {/* Add New Address Form */}
-            {showAddressForm && (
+              {/* Add New Address Form */}
+              {showAddressForm && (
                 <div>
-
-                <h3 className="text-lg font-semibold mb-5">
+                  <h3 className="mb-5 text-lg font-semibold">
                     Add New Address
-                </h3>
+                  </h3>
 
-                <div className="space-y-5">
-
+                  <div className="space-y-5">
                     {/* Full Name */}
                     <div>
-                    <label className="block text-sm font-medium mb-2">
+                      <label className="mb-2 block text-sm font-medium">
                         Full Name
-                    </label>
+                      </label>
 
-                    <input
+                      <input
                         type="text"
                         placeholder="Enter your full name"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                    />
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                      />
                     </div>
 
                     {/* Phone */}
                     <div>
-                    <label className="block text-sm font-medium mb-2">
+                      <label className="mb-2 block text-sm font-medium">
                         Phone Number
-                    </label>
+                      </label>
 
-                    <input
+                      <input
                         type="tel"
                         placeholder="Enter your phone number"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                    />
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                      />
                     </div>
 
                     {/* Address Line 1 */}
                     <div>
-                    <label className="block text-sm font-medium mb-2">
+                      <label className="mb-2 block text-sm font-medium">
                         Address Line 1
-                    </label>
+                      </label>
 
-                    <input
+                      <input
                         type="text"
                         placeholder="House number, street name"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                    />
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                      />
                     </div>
 
                     {/* Address Line 2 */}
                     <div>
-                    <label className="block text-sm font-medium mb-2">
+                      <label className="mb-2 block text-sm font-medium">
                         Address Line 2
-                    </label>
+                      </label>
 
-                    <input
+                      <input
                         type="text"
                         placeholder="Apartment, area, landmark"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                    />
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                      />
                     </div>
 
                     {/* City / State */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                        City
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <div>
+                        <label className="mb-2 block text-sm font-medium">
+                          City
                         </label>
 
                         <input
-                        type="text"
-                        placeholder="Enter city"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                          type="text"
+                          placeholder="Enter city"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
                         />
-                    </div>
+                      </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                        State
+                      <div>
+                        <label className="mb-2 block text-sm font-medium">
+                          State
                         </label>
 
                         <input
-                        type="text"
-                        placeholder="Enter state"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                          type="text"
+                          placeholder="Enter state"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
                         />
-                    </div>
-
+                      </div>
                     </div>
 
                     {/* Postal Code / Country */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                        Postal Code
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <div>
+                        <label className="mb-2 block text-sm font-medium">
+                          Postal Code
                         </label>
 
                         <input
-                        type="text"
-                        placeholder="Enter postal code"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                          type="text"
+                          placeholder="Enter postal code"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
                         />
-                    </div>
+                      </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                        Country
+                      <div>
+                        <label className="mb-2 block text-sm font-medium">
+                          Country
                         </label>
 
                         <input
-                        type="text"
-                        value="India"
-                        readOnly
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-100"
+                          type="text"
+                          value="India"
+                          readOnly
+                          className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3"
                         />
+                      </div>
                     </div>
+                  </div>
 
-                    </div>
-
-                </div>
-
-                {/* Address Form Actions */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
-
+                  {/* Address Form Actions */}
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                     <button
-                    type="button"
-                    onClick={() => setShowAddressForm(false)}
-                    className="border border-gray-300 px-5 py-3 rounded-lg font-medium hover:bg-gray-50"
+                      type="button"
+                      onClick={() => setShowAddressForm(false)}
+                      className="rounded-lg border border-gray-300 px-5 py-3 font-medium hover:bg-gray-50"
                     >
-                    Cancel
+                      Cancel
                     </button>
 
                     <button
-                    type="button"
-                    onClick={() => setShowAddressForm(false)}
-                    className="bg-black text-white px-5 py-3 rounded-lg font-medium hover:bg-gray-800"
+                      type="button"
+                      onClick={() => setShowAddressForm(false)}
+                      className="rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800"
                     >
-                    Save Address
+                      Save Address
                     </button>
-
+                  </div>
                 </div>
-
-                </div>
-            )}
-
+              )}
             </div>
-            
-            {/* Payment Method Placeholder */}
-            <div className="bg-white rounded-lg shadow-md p-6">
 
-              <h2 className="text-xl font-bold mb-4">
-                Payment Method
-              </h2>
+            {/* Payment Method */}
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Payment Method
+                </h2>
 
-              <div className="border border-gray-300 rounded-lg p-4">
-                <p className="font-medium">
-                  Payment method selection will be added next.
-                </p>
-
-                <p className="text-sm text-gray-600 mt-1">
-                  This section is currently UI only.
+                <p className="mt-1 text-sm text-gray-500">
+                  Select your preferred payment method.
                 </p>
               </div>
 
-            </div>
+              <div className="space-y-4">
+                {/* Cash on Delivery */}
+                <label
+                  className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
+                    paymentMethod === "cod"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="h-4 w-4"
+                  />
 
+                  <div className="ml-4">
+                    <p className="font-medium text-gray-800">
+                      Cash on Delivery
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      Pay when your order is delivered.
+                    </p>
+                  </div>
+                </label>
+
+                {/* UPI */}
+                <label
+                  className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
+                    paymentMethod === "upi"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="upi"
+                    checked={paymentMethod === "upi"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="h-4 w-4"
+                  />
+
+                  <div className="ml-4">
+                    <p className="font-medium text-gray-800">UPI</p>
+
+                    <p className="text-sm text-gray-500">
+                      Pay using Google Pay, PhonePe, Paytm or another UPI
+                      app.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Credit / Debit Card */}
+                <label
+                  className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
+                    paymentMethod === "card"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="card"
+                    checked={paymentMethod === "card"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="h-4 w-4"
+                  />
+
+                  <div className="ml-4">
+                    <p className="font-medium text-gray-800">
+                      Credit / Debit Card
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      Pay securely using your credit or debit card.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Net Banking */}
+                <label
+                  className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
+                    paymentMethod === "netbanking"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="netbanking"
+                    checked={paymentMethod === "netbanking"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="h-4 w-4"
+                  />
+
+                  <div className="ml-4">
+                    <p className="font-medium text-gray-800">
+                      Net Banking
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      Pay directly through your bank account.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Wallet */}
+                <label
+                  className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
+                    paymentMethod === "wallet"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="wallet"
+                    checked={paymentMethod === "wallet"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="h-4 w-4"
+                  />
+
+                  <div className="ml-4">
+                    <p className="font-medium text-gray-800">Wallet</p>
+
+                    <p className="text-sm text-gray-500">
+                      Pay using a supported digital wallet.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-lg shadow-md p-6 h-fit">
-
-            <h2 className="text-xl font-bold mb-6">
-              Order Summary
-            </h2>
+          <div className="h-fit rounded-lg bg-white p-6 shadow-md">
+            <h2 className="mb-6 text-xl font-bold">Order Summary</h2>
 
             {/* Products */}
             <div className="space-y-4">
-
               {cartItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between gap-4"
                 >
                   <div>
-                    <p className="font-medium">
-                      {item.name}
-                    </p>
+                    <p className="font-medium">{item.name}</p>
 
                     <p className="text-sm text-gray-500">
                       Qty: {item.quantity}
@@ -407,20 +508,19 @@ function Checkout() {
                   </div>
 
                   <p className="font-medium">
-                    ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                    ₹
+                    {(item.price * item.quantity).toLocaleString(
+                      "en-IN"
+                    )}
                   </p>
                 </div>
               ))}
-
             </div>
 
-            <div className="border-t mt-6 pt-5 space-y-4">
-
+            <div className="mt-6 space-y-4 border-t pt-5">
               {/* Subtotal */}
               <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Subtotal
-                </span>
+                <span className="text-gray-600">Subtotal</span>
 
                 <span className="font-medium">
                   ₹{subtotal.toLocaleString("en-IN")}
@@ -429,20 +529,14 @@ function Checkout() {
 
               {/* Shipping */}
               <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Shipping
-                </span>
+                <span className="text-gray-600">Shipping</span>
 
-                <span className="font-medium">
-                  Free
-                </span>
+                <span className="font-medium">Free</span>
               </div>
 
               {/* Tax */}
               <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Tax
-                </span>
+                <span className="text-gray-600">Tax</span>
 
                 <span className="font-medium">
                   ₹{tax.toLocaleString("en-IN")}
@@ -451,9 +545,7 @@ function Checkout() {
 
               {/* Discount */}
               <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Discount
-                </span>
+                <span className="text-gray-600">Discount</span>
 
                 <span className="font-medium">
                   - ₹{discount.toLocaleString("en-IN")}
@@ -461,24 +553,19 @@ function Checkout() {
               </div>
 
               {/* Total */}
-              <div className="border-t pt-4 flex justify-between">
-
-                <span className="text-lg font-bold">
-                  Total
-                </span>
+              <div className="flex justify-between border-t pt-4">
+                <span className="text-lg font-bold">Total</span>
 
                 <span className="text-lg font-bold">
                   ₹{total.toLocaleString("en-IN")}
                 </span>
-
               </div>
-
             </div>
 
             {/* Place Order */}
             <button
               type="button"
-              className="w-full bg-black text-white py-3 rounded-lg mt-6 font-semibold hover:bg-gray-800"
+              className="mt-6 w-full rounded-lg bg-black py-3 font-semibold text-white hover:bg-gray-800"
             >
               Place Order
             </button>
@@ -486,41 +573,34 @@ function Checkout() {
             {/* Back to Cart */}
             <Link
               to="/cart"
-              className="block text-center w-full border border-black py-3 rounded-lg mt-3 font-semibold hover:bg-black hover:text-white"
+              className="mt-3 block w-full rounded-lg border border-black py-3 text-center font-semibold hover:bg-black hover:text-white"
             >
               Back to Cart
             </Link>
-
           </div>
-
         </div>
       ) : (
-
         /* Empty Cart */
-        <div className="text-center py-20">
-
-          <h2 className="text-2xl font-bold mb-3">
+        <div className="py-20 text-center">
+          <h2 className="mb-3 text-2xl font-bold">
             Your Cart is Empty
           </h2>
 
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-gray-600">
             Add products to your cart before proceeding to checkout.
           </p>
 
           <Link
             to="/products"
-            className="inline-block bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800"
+            className="inline-block rounded-lg bg-black px-6 py-3 font-semibold text-white hover:bg-gray-800"
           >
             Browse Products
           </Link>
-
         </div>
       )}
-
     </div>
   );
 }
 
 export default Checkout;
-
 
