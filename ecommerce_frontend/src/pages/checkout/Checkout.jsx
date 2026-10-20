@@ -81,20 +81,25 @@ function Checkout() {
         (address) => address.id === selectedAddressId
     );
 
-    // Frontend-only order confirmation
-    alert(
-        `Order placed successfully!\n\n` +
-        `Payment Method: ${paymentMethod.toUpperCase()}\n` +
-        `Shipping To: ${selectedAddress?.fullName}\n` +
-        `Total Amount: ₹${total}`
-    );
+    // Create frontend-only order information
+    const orderData = {
+        orderNumber: `ORD-${Date.now()}`,
+        paymentMethod: paymentMethod,
+        total: total,
+        address: selectedAddress,
+    };
 
-    // Clear cart after placing order
+    // Clear cart
     clearCart();
 
-    // Redirect to Orders page
-    navigate("/orders");
-    };
+    // Navigate to order confirmation page
+    navigate("/order-confirmation", {
+        state: {
+        order: orderData,
+        },
+    });
+};
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
@@ -592,13 +597,13 @@ function Checkout() {
 
             {/* Place Order */}
             <button
-                type="button"
-                onClick={handlePlaceOrder}
-                className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+              type="button"
+              onClick={handlePlaceOrder}
+              className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
-                Place Order
+              Place Order
             </button>
-            
+
             {/* Back to Cart */}
             <Link
               to="/cart"
