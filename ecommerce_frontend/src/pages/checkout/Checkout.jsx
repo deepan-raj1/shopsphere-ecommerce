@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useShop } from "../../context/ShopContext";
 
@@ -30,14 +30,14 @@ const initialAddresses = [
 ];
 
 function Checkout() {
-  const { cartItems } = useShop();
+  const { cartItems, clearCart } = useShop();
 
   const [addresses, setAddresses] = useState(initialAddresses);
 
   const [selectedAddressId, setSelectedAddressId] = useState(
     initialAddresses.find((address) => address.isDefault)?.id ||
       initialAddresses[0]?.id ||
-      null
+      null,
   );
 
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -46,7 +46,7 @@ function Checkout() {
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
 
   const shipping = 0;
@@ -54,6 +54,47 @@ function Checkout() {
   const discount = 0;
 
   const total = subtotal + shipping + tax - discount;
+
+  const navigate = useNavigate();
+
+  const handlePlaceOrder = () => {
+    // Check if cart is empty
+    if (cartItems.length === 0) {
+        alert("Your cart is empty.");
+        return;
+    }
+
+    // Check if shipping address is selected
+    if (!selectedAddressId) {
+        alert("Please select a shipping address.");
+        return;
+    }
+
+    // Check if payment method is selected
+    if (!paymentMethod) {
+        alert("Please select a payment method.");
+        return;
+    }
+
+    // Get selected address
+    const selectedAddress = addresses.find(
+        (address) => address.id === selectedAddressId
+    );
+
+    // Frontend-only order confirmation
+    alert(
+        `Order placed successfully!\n\n` +
+        `Payment Method: ${paymentMethod.toUpperCase()}\n` +
+        `Shipping To: ${selectedAddress?.fullName}\n` +
+        `Total Amount: ₹${total}`
+    );
+
+    // Clear cart after placing order
+    clearCart();
+
+    // Redirect to Orders page
+    navigate("/orders");
+    };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
@@ -72,9 +113,7 @@ function Checkout() {
           <div className="space-y-6 lg:col-span-2">
             {/* Customer Information */}
             <div className="rounded-lg bg-white p-6 shadow-md">
-              <h2 className="mb-6 text-xl font-bold">
-                Customer Information
-              </h2>
+              <h2 className="mb-6 text-xl font-bold">Customer Information</h2>
 
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 {/* Full Name */}
@@ -153,9 +192,7 @@ function Checkout() {
                           type="radio"
                           name="shippingAddress"
                           checked={selectedAddressId === address.id}
-                          onChange={() =>
-                            setSelectedAddressId(address.id)
-                          }
+                          onChange={() => setSelectedAddressId(address.id)}
                           className="mt-1 h-4 w-4"
                         />
 
@@ -397,8 +434,7 @@ function Checkout() {
                     <p className="font-medium text-gray-800">UPI</p>
 
                     <p className="text-sm text-gray-500">
-                      Pay using Google Pay, PhonePe, Paytm or another UPI
-                      app.
+                      Pay using Google Pay, PhonePe, Paytm or another UPI app.
                     </p>
                   </div>
                 </label>
@@ -449,9 +485,7 @@ function Checkout() {
                   />
 
                   <div className="ml-4">
-                    <p className="font-medium text-gray-800">
-                      Net Banking
-                    </p>
+                    <p className="font-medium text-gray-800">Net Banking</p>
 
                     <p className="text-sm text-gray-500">
                       Pay directly through your bank account.
@@ -495,10 +529,7 @@ function Checkout() {
             {/* Products */}
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between gap-4"
-                >
+                <div key={item.id} className="flex justify-between gap-4">
                   <div>
                     <p className="font-medium">{item.name}</p>
 
@@ -508,10 +539,7 @@ function Checkout() {
                   </div>
 
                   <p className="font-medium">
-                    ₹
-                    {(item.price * item.quantity).toLocaleString(
-                      "en-IN"
-                    )}
+                    ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                   </p>
                 </div>
               ))}
@@ -564,12 +592,13 @@ function Checkout() {
 
             {/* Place Order */}
             <button
-              type="button"
-              className="mt-6 w-full rounded-lg bg-black py-3 font-semibold text-white hover:bg-gray-800"
+                type="button"
+                onClick={handlePlaceOrder}
+                className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
-              Place Order
+                Place Order
             </button>
-
+            
             {/* Back to Cart */}
             <Link
               to="/cart"
@@ -582,9 +611,7 @@ function Checkout() {
       ) : (
         /* Empty Cart */
         <div className="py-20 text-center">
-          <h2 className="mb-3 text-2xl font-bold">
-            Your Cart is Empty
-          </h2>
+          <h2 className="mb-3 text-2xl font-bold">Your Cart is Empty</h2>
 
           <p className="mb-6 text-gray-600">
             Add products to your cart before proceeding to checkout.
@@ -603,4 +630,3 @@ function Checkout() {
 }
 
 export default Checkout;
-
