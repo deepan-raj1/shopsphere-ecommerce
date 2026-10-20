@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useShop } from "../../context/ShopContext";
 
 const products = [
   {
@@ -29,6 +30,13 @@ const products = [
 
 function ProductDetail() {
   const { id } = useParams();
+
+  const {
+    addToCart,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+  } = useShop();
 
   const product = products.find(
     (item) => item.id === Number(id)
@@ -142,18 +150,25 @@ function ProductDetail() {
 
             <button
               type="button"
-              className="flex-1 bg-black text-white py-3 rounded-lg font-semibold hover:opacity-80"
+              onClick={() => addToCart(product)}
+              className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700"
             >
               Add to Cart
             </button>
 
             <button
               type="button"
-              className="flex-1 border border-black py-3 rounded-lg font-semibold hover:bg-black hover:text-white"
+              onClick={() =>
+                isInWishlist(product.id)
+                  ? removeFromWishlist(product.id)
+                  : addToWishlist(product)
+              }
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 hover:bg-gray-50"
             >
-              Add to Wishlist
+              {isInWishlist(product.id)
+                ? "Remove from Wishlist"
+                : "Add to Wishlist"}
             </button>
-
           </div>
 
         </div>
@@ -164,4 +179,6 @@ function ProductDetail() {
 }
 
 export default ProductDetail;
+
+
 

@@ -1,53 +1,36 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useShop } from "../../context/ShopContext";
 
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 1999,
-    quantity: 1,
-    image: "https://via.placeholder.com/150x150?text=Headphones",
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: 2999,
-    quantity: 2,
-    image: "https://via.placeholder.com/150x150?text=Smart+Watch",
-  },
-];
 
 function Cart() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const {
+    cartItems,
+    removeFromCart,
+    updateCartQuantity,
+  } = useShop();
 
   // Increase quantity
   const increaseQuantity = (id) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-  };
+    const item = cartItems.find((item) => item.id === id);
 
+    if (item) {
+      updateCartQuantity(id, item.quantity + 1);
+    }
+  };
+  
   // Decrease quantity
   const decreaseQuantity = (id) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    const item = cartItems.find((item) => item.id === id);
+
+    if (item && item.quantity > 1) {
+      updateCartQuantity(id, item.quantity - 1);
+    }
   };
 
+  
   // Remove item
   const removeItem = (id) => {
-    setCartItems((items) =>
-      items.filter((item) => item.id !== id)
-    );
+    removeFromCart(id);
   };
 
   // Calculate subtotal

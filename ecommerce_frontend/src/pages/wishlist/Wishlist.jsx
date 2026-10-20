@@ -1,51 +1,14 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useShop } from "../../context/ShopContext";
 
-const initialWishlistItems = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 1999,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: 2999,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    price: 2399,
-    image: "https://via.placeholder.com/300x200",
-  },
-];
 
 const Wishlist = () => {
-  const [wishlistItems, setWishlistItems] = useState(
-    initialWishlistItems
-  );
+  const {
+    wishlistItems,
+    removeFromWishlist,
+    addToCart,
+  } = useShop();
 
-  const addToWishlist = (product) => {
-    setWishlistItems((items) => {
-      const alreadyExists = items.some(
-        (item) => item.id === product.id
-      );
-
-      if (alreadyExists) {
-        return items;
-      }
-
-      return [...items, product];
-    });
-  };
-
-  const removeFromWishlist = (id) => {
-    setWishlistItems((items) =>
-      items.filter((item) => item.id !== id)
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
@@ -118,6 +81,7 @@ const Wishlist = () => {
                     {/* Add to Cart */}
                     <button
                       type="button"
+                      onClick={() => addToCart(item)}
                       className="rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
                     >
                       Add to Cart
@@ -138,29 +102,7 @@ const Wishlist = () => {
           </div>
         )}
 
-        {/* Demo Add Product Section */}
-        <div className="mt-10 rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Add Products to Wishlist
-          </h2>
 
-          <p className="mt-2 text-gray-600">
-            Demo buttons for testing wishlist functionality.
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            {initialWishlistItems.map((product) => (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => addToWishlist(product)}
-                className="rounded-lg border border-blue-600 px-4 py-2 font-medium text-blue-600 hover:bg-blue-50"
-              >
-                Add {product.name}
-              </button>
-            ))}
-          </div>
-        </div>
 
       </div>
     </div>
@@ -168,3 +110,4 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
+
