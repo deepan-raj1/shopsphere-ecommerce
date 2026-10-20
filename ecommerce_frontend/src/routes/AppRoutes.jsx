@@ -13,6 +13,7 @@ import Wishlist from "../pages/wishlist/Wishlist";
 import Checkout from "../pages/checkout/Checkout";
 import OrderConfirmation from "../pages/order/OrderConfirmation";
 import OrderList from "../pages/order/OrderList";
+import OrderDetail from "../pages/order/OrderDetail";
 
 function AppRoutes() {
   return (
@@ -36,7 +37,7 @@ function AppRoutes() {
           <Route path="/checkout" element={<Checkout />} />
 
           <Route path="/orders" element={<OrderList />} />
-          <Route path="/orders/:id" element={<h1>Order Detail Page</h1>} />
+          <Route path="/orders/:id" element={<OrderDetail />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
           <Route path="/profile" element={<Profile />} />
