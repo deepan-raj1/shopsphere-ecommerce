@@ -81,7 +81,7 @@ const orders = [
     id: 3,
     orderNumber: "ORD-100003",
     date: "15 Oct 2026",
-    status: "Shipped",
+    status: "Cancelled",
     paymentMethod: "Credit / Debit Card",
     paymentStatus: "Paid",
 
@@ -119,10 +119,40 @@ const orders = [
   },
 ];
 
+const orderStatuses = [
+  "Pending",
+  "Confirmed",
+  "Processing",
+  "Shipped",
+  "Delivered",
+];
+
 const OrderDetail = () => {
   const { id } = useParams();
 
   const order = orders.find((item) => item.id === Number(id));
+
+  const currentStatusIndex = order ? orderStatuses.indexOf(order.status) : -1;
+
+  const getStatusIcon = (statusIndex) => {
+    if (statusIndex < currentStatusIndex) {
+      return "✓";
+    }
+
+    if (statusIndex === currentStatusIndex) {
+      return "●";
+    }
+
+    return "○";
+  };
+
+  const getStatusTextClass = (statusIndex) => {
+    if (statusIndex <= currentStatusIndex) {
+      return "font-semibold text-blue-600";
+    }
+
+    return "text-gray-400";
+  };
 
   if (!order) {
     return (
@@ -178,13 +208,13 @@ const OrderDetail = () => {
 
         {/* Order Status */}
         <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div>
               <p className="text-sm text-gray-500">Order Status</p>
 
-              <span className="mt-2 inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
+              <h2 className="mt-1 text-xl font-bold text-gray-800">
                 {order.status}
-              </span>
+              </h2>
             </div>
 
             <div className="sm:text-right">
@@ -195,8 +225,70 @@ const OrderDetail = () => {
               </span>
             </div>
           </div>
-        </div>
 
+          {/* Status Timeline */}
+          {order.status === "Cancelled" ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl text-red-600">✕</span>
+
+                <div>
+                  <p className="font-semibold text-red-700">Order Cancelled</p>
+
+                  <p className="text-sm text-red-600">
+                    This order has been cancelled.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {orderStatuses.map((status, index) => {
+                const isLast = index === orderStatuses.length - 1;
+
+                return (
+                  <div key={status} className="flex">
+                    {/* Timeline Icon and Line */}
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-lg font-bold ${
+                          index <= currentStatusIndex
+                            ? "border-blue-600 bg-blue-600 text-white"
+                            : "border-gray-300 bg-white text-gray-400"
+                        }`}
+                      >
+                        {getStatusIcon(index)}
+                      </div>
+
+                      {!isLast && (
+                        <div
+                          className={`h-10 w-0.5 ${
+                            index < currentStatusIndex
+                              ? "bg-blue-600"
+                              : "bg-gray-300"
+                          }`}
+                        />
+                      )}
+                    </div>
+
+                    {/* Status Text */}
+                    <div className="ml-4 pb-8">
+                      <p className={`text-base ${getStatusTextClass(index)}`}>
+                        {status}
+                      </p>
+
+                      {index === currentStatusIndex && (
+                        <p className="mt-1 text-sm text-gray-500">
+                          Current order status
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
         {/* Order Items */}
         <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
           <h2 className="mb-5 text-xl font-bold text-gray-800">Order Items</h2>
@@ -353,3 +445,4 @@ const OrderDetail = () => {
 };
 
 export default OrderDetail;
+
