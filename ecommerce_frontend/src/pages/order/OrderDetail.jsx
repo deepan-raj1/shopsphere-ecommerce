@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
 
 const orders = [
   {
@@ -130,9 +131,20 @@ const orderStatuses = [
 const OrderDetail = () => {
   const { id } = useParams();
 
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+
+  const [cancelled, setCancelled] = useState(false);
+
   const order = orders.find((item) => item.id === Number(id));
 
-  const currentStatusIndex = order ? orderStatuses.indexOf(order.status) : -1;
+  const currentOrderStatus = cancelled ? "Cancelled" : order?.status;
+
+  const canCancelOrder =
+    currentOrderStatus === "Pending" || currentOrderStatus === "Confirmed";
+
+  const currentStatusIndex = order
+    ? orderStatuses.indexOf(currentOrderStatus)
+    : -1;
 
   const getStatusIcon = (statusIndex) => {
     if (statusIndex < currentStatusIndex) {
@@ -176,6 +188,11 @@ const OrderDetail = () => {
       </div>
     );
   }
+
+  const handleCancelOrder = () => {
+    setCancelled(true);
+    setShowCancelConfirmation(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
@@ -227,7 +244,7 @@ const OrderDetail = () => {
           </div>
 
           {/* Status Timeline */}
-          {order.status === "Cancelled" ? (
+          {currentOrderStatus === "Cancelled" ? (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
               <div className="flex items-center gap-3">
                 <span className="text-2xl text-red-600">✕</span>
@@ -432,6 +449,16 @@ const OrderDetail = () => {
             Back to Orders
           </Link>
 
+          {canCancelOrder && (
+            <button
+              type="button"
+              onClick={() => setShowCancelConfirmation(true)}
+              className="rounded-lg border border-red-300 px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50"
+            >
+              Cancel Order
+            </button>
+          )}
+
           <Link
             to="/products"
             className="rounded-lg bg-blue-600 px-6 py-3 text-center font-semibold text-white transition hover:bg-blue-700"
@@ -440,9 +467,40 @@ const OrderDetail = () => {
           </Link>
         </div>
       </div>
+      {showCancelConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="mb-3 text-xl font-bold text-gray-800">
+              Cancel Order?
+            </h2>
+
+            <p className="mb-6 text-gray-600">
+              Are you sure you want to cancel this order? This action cannot be
+              undone.
+            </p>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setShowCancelConfirmation(false)}
+                className="rounded-lg border border-gray-300 px-5 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100"
+              >
+                Keep Order
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                className="rounded-lg bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-700"
+              >
+                Yes, Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default OrderDetail;
-
