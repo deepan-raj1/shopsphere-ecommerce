@@ -14,6 +14,8 @@ import Checkout from "../pages/checkout/Checkout";
 import OrderConfirmation from "../pages/order/OrderConfirmation";
 import OrderList from "../pages/order/OrderList";
 import OrderDetail from "../pages/order/OrderDetail";
+import AddressList from "../pages/profile/AddressList";
+
 
 function AppRoutes() {
   return (
@@ -41,6 +43,7 @@ function AppRoutes() {
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
           <Route path="/profile" element={<Profile />} />
+          <Route path="/addresses" element={<AddressList />} />
         </Route>
 
       </Routes>
@@ -49,4 +52,5 @@ function AppRoutes() {
 }
 
 export default AppRoutes;
+
 
