@@ -27,8 +27,62 @@ const initialAddresses = [
   },
 ];
 
+const emptyAddress = {
+  fullName: "",
+  phoneNumber: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "India",
+  isDefault: false,
+};
+
 const AddressList = () => {
-  const [addresses] = useState(initialAddresses);
+  const [addresses, setAddresses] = useState(initialAddresses);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [formData, setFormData] = useState(emptyAddress);
+
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSaveAddress = (event) => {
+    event.preventDefault();
+
+    const newAddress = {
+      id: Date.now(),
+      ...formData,
+    };
+
+    setAddresses((previous) => {
+      if (newAddress.isDefault) {
+        return [
+          ...previous.map((address) => ({
+            ...address,
+            isDefault: false,
+          })),
+          newAddress,
+        ];
+      }
+
+      return [...previous, newAddress];
+    });
+
+    setFormData(emptyAddress);
+    setShowAddressForm(false);
+  };
+
+  const handleCancel = () => {
+    setFormData(emptyAddress);
+    setShowAddressForm(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
@@ -37,6 +91,7 @@ const AddressList = () => {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Addresses</h1>
+
             <p className="mt-2 text-gray-600">
               Manage your saved shipping addresses.
             </p>
@@ -44,11 +99,232 @@ const AddressList = () => {
 
           <button
             type="button"
+            onClick={() => setShowAddressForm(true)}
             className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
           >
             + Add New Address
           </button>
         </div>
+
+        {/* Add Address Form */}
+        {showAddressForm && (
+          <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Add New Address
+              </h2>
+
+              <p className="mt-1 text-gray-600">
+                Enter your shipping address details.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveAddress}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {/* Full Name */}
+                <div>
+                  <label
+                    htmlFor="fullName"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Full Name
+                  </label>
+
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    placeholder="Enter full name"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Phone Number */}
+                <div>
+                  <label
+                    htmlFor="phoneNumber"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Phone Number
+                  </label>
+
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    placeholder="Enter phone number"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Address Line 1 */}
+                <div className="md:col-span-2">
+                  <label
+                    htmlFor="addressLine1"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Address Line 1
+                  </label>
+
+                  <input
+                    id="addressLine1"
+                    name="addressLine1"
+                    type="text"
+                    value={formData.addressLine1}
+                    onChange={handleInputChange}
+                    placeholder="House / Flat / Street"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Address Line 2 */}
+                <div className="md:col-span-2">
+                  <label
+                    htmlFor="addressLine2"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Address Line 2
+                  </label>
+
+                  <input
+                    id="addressLine2"
+                    name="addressLine2"
+                    type="text"
+                    value={formData.addressLine2}
+                    onChange={handleInputChange}
+                    placeholder="Area / Landmark (Optional)"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* City */}
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    City
+                  </label>
+
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="Enter city"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* State */}
+                <div>
+                  <label
+                    htmlFor="state"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    State
+                  </label>
+
+                  <input
+                    id="state"
+                    name="state"
+                    type="text"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="Enter state"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Postal Code */}
+                <div>
+                  <label
+                    htmlFor="postalCode"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Postal Code
+                  </label>
+
+                  <input
+                    id="postalCode"
+                    name="postalCode"
+                    type="text"
+                    value={formData.postalCode}
+                    onChange={handleInputChange}
+                    placeholder="Enter postal code"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label
+                    htmlFor="country"
+                    className="mb-2 block font-semibold text-gray-700"
+                  >
+                    Country
+                  </label>
+
+                  <input
+                    id="country"
+                    name="country"
+                    type="text"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Default Address */}
+              <div className="mt-6">
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="checkbox"
+                    name="isDefault"
+                    checked={formData.isDefault}
+                    onChange={handleInputChange}
+                    className="h-4 w-4"
+                  />
+
+                  <span className="font-semibold text-gray-700">
+                    Set as default address
+                  </span>
+                </label>
+              </div>
+
+              {/* Form Actions */}
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="rounded-lg border border-gray-300 px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+                >
+                  Save Address
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
         {/* Address List */}
         <div className="space-y-5">
@@ -129,6 +405,7 @@ const AddressList = () => {
 
             <button
               type="button"
+              onClick={() => setShowAddressForm(true)}
               className="mt-6 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
               + Add New Address
