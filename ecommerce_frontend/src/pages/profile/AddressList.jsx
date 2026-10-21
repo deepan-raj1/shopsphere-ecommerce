@@ -44,6 +44,7 @@ const AddressList = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [formData, setFormData] = useState(emptyAddress);
   const [editingAddressId, setEditingAddressId] = useState(null);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -128,6 +129,26 @@ const AddressList = () => {
     setFormData(emptyAddress);
     setEditingAddressId(null);
     setShowAddressForm(false);
+  };
+
+  const handleDeleteClick = (address) => {
+    setAddressToDelete(address);
+  };
+
+  const handleCancelDelete = () => {
+    setAddressToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!addressToDelete) {
+      return;
+    }
+
+    setAddresses((previous) =>
+      previous.filter((address) => address.id !== addressToDelete.id),
+    );
+
+    setAddressToDelete(null);
   };
 
   return (
@@ -423,6 +444,7 @@ const AddressList = () => {
 
                 <button
                   type="button"
+                  onClick={() => handleDeleteClick(address)}
                   className="rounded-lg border border-red-600 px-4 py-2 font-semibold text-red-600 transition hover:bg-red-50"
                 >
                   Delete
@@ -459,6 +481,43 @@ const AddressList = () => {
             >
               + Add New Address
             </button>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {addressToDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+            <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+              <h2 className="mb-3 text-xl font-bold text-gray-800">
+                Delete Address?
+              </h2>
+
+              <p className="mb-2 text-gray-600">
+                Are you sure you want to delete this address?
+              </p>
+
+              <p className="mb-6 font-semibold text-gray-800">
+                {addressToDelete.addressLine1}, {addressToDelete.city}
+              </p>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={handleCancelDelete}
+                  className="rounded-lg border border-gray-300 px-5 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100"
+                >
+                  Keep Address
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  className="rounded-lg bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-700"
+                >
+                  Yes, Delete Address
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
