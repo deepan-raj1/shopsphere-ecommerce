@@ -43,6 +43,7 @@ const AddressList = () => {
   const [addresses, setAddresses] = useState(initialAddresses);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [formData, setFormData] = useState(emptyAddress);
+  const [editingAddressId, setEditingAddressId] = useState(null);
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -53,34 +54,79 @@ const AddressList = () => {
     }));
   };
 
+  const handleAddAddress = () => {
+    setEditingAddressId(null);
+    setFormData(emptyAddress);
+    setShowAddressForm(true);
+  };
+
+  const handleEditAddress = (address) => {
+    setEditingAddressId(address.id);
+
+    setFormData({
+      fullName: address.fullName,
+      phoneNumber: address.phoneNumber,
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2,
+      city: address.city,
+      state: address.state,
+      postalCode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+    });
+
+    setShowAddressForm(true);
+  };
+
   const handleSaveAddress = (event) => {
     event.preventDefault();
 
-    const newAddress = {
-      id: Date.now(),
-      ...formData,
-    };
+    if (editingAddressId !== null) {
+      setAddresses((previous) =>
+        previous.map((address) =>
+          address.id === editingAddressId
+            ? {
+                ...address,
+                ...formData,
+                isDefault: formData.isDefault,
+              }
+            : formData.isDefault
+              ? {
+                  ...address,
+                  isDefault: false,
+                }
+              : address,
+        ),
+      );
+    } else {
+      const newAddress = {
+        id: Date.now(),
+        ...formData,
+      };
 
-    setAddresses((previous) => {
-      if (newAddress.isDefault) {
-        return [
-          ...previous.map((address) => ({
-            ...address,
-            isDefault: false,
-          })),
-          newAddress,
-        ];
-      }
+      setAddresses((previous) => {
+        if (newAddress.isDefault) {
+          return [
+            ...previous.map((address) => ({
+              ...address,
+              isDefault: false,
+            })),
+            newAddress,
+          ];
+        }
 
-      return [...previous, newAddress];
-    });
+        return [...previous, newAddress];
+      });
+    }
 
     setFormData(emptyAddress);
+    setEditingAddressId(null);
     setShowAddressForm(false);
   };
 
   const handleCancel = () => {
     setFormData(emptyAddress);
+    setEditingAddressId(null);
     setShowAddressForm(false);
   };
 
@@ -99,23 +145,25 @@ const AddressList = () => {
 
           <button
             type="button"
-            onClick={() => setShowAddressForm(true)}
+            onClick={handleAddAddress}
             className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
           >
             + Add New Address
           </button>
         </div>
 
-        {/* Add Address Form */}
+        {/* Add / Edit Address Form */}
         {showAddressForm && (
           <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900">
-                Add New Address
+                {editingAddressId !== null ? "Edit Address" : "Add New Address"}
               </h2>
 
               <p className="mt-1 text-gray-600">
-                Enter your shipping address details.
+                {editingAddressId !== null
+                  ? "Update your saved address details."
+                  : "Enter your shipping address details."}
               </p>
             </div>
 
@@ -319,7 +367,7 @@ const AddressList = () => {
                   type="submit"
                   className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
                 >
-                  Save Address
+                  {editingAddressId !== null ? "Save Changes" : "Save Address"}
                 </button>
               </div>
             </form>
@@ -367,6 +415,7 @@ const AddressList = () => {
               <div className="mt-6 flex flex-wrap gap-3 border-t border-gray-100 pt-5">
                 <button
                   type="button"
+                  onClick={() => handleEditAddress(address)}
                   className="rounded-lg border border-blue-600 px-4 py-2 font-semibold text-blue-600 transition hover:bg-blue-50"
                 >
                   Edit
@@ -405,7 +454,7 @@ const AddressList = () => {
 
             <button
               type="button"
-              onClick={() => setShowAddressForm(true)}
+              onClick={handleAddAddress}
               className="mt-6 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
               + Add New Address
@@ -418,3 +467,4 @@ const AddressList = () => {
 };
 
 export default AddressList;
+
