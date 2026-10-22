@@ -72,9 +72,7 @@ const OrderList = () => {
       <div className="mx-auto max-w-5xl">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
-            My Orders
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800">My Orders</h1>
 
           <p className="mt-2 text-gray-600">
             View and track your recent orders.
@@ -102,16 +100,11 @@ const OrderList = () => {
         ) : (
           <div className="space-y-6">
             {orders.map((order) => (
-              <div
-                key={order.id}
-                className="rounded-xl bg-white p-6 shadow-sm"
-              >
+              <div key={order.id} className="rounded-xl bg-white p-6 shadow-sm">
                 {/* Order Header */}
                 <div className="flex flex-col justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center">
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Order Number
-                    </p>
+                    <p className="text-sm text-gray-500">Order Number</p>
 
                     <h2 className="text-lg font-bold text-gray-800">
                       #{order.orderNumber}
@@ -119,13 +112,9 @@ const OrderList = () => {
                   </div>
 
                   <div className="sm:text-right">
-                    <p className="text-sm text-gray-500">
-                      Order Date
-                    </p>
+                    <p className="text-sm text-gray-500">Order Date</p>
 
-                    <p className="font-medium text-gray-800">
-                      {order.date}
-                    </p>
+                    <p className="font-medium text-gray-800">{order.date}</p>
                   </div>
                 </div>
 
@@ -162,19 +151,13 @@ const OrderList = () => {
                 {/* Order Information */}
                 <div className="grid gap-4 border-t border-gray-200 pt-5 sm:grid-cols-3">
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Total Amount
-                    </p>
+                    <p className="text-sm text-gray-500">Total Amount</p>
 
-                    <p className="font-bold text-gray-800">
-                      ₹{order.total}
-                    </p>
+                    <p className="font-bold text-gray-800">₹{order.total}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Order Status
-                    </p>
+                    <p className="text-sm text-gray-500">Order Status</p>
 
                     <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
                       {order.status}
@@ -182,9 +165,7 @@ const OrderList = () => {
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Payment
-                    </p>
+                    <p className="text-sm text-gray-500">Payment</p>
 
                     <p className="font-medium text-gray-800">
                       {order.paymentMethod}
@@ -215,4 +196,3 @@ const OrderList = () => {
 };
 
 export default OrderList;
-

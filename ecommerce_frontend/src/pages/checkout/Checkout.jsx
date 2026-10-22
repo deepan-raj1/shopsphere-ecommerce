@@ -29,6 +29,18 @@ const initialAddresses = [
   },
 ];
 
+const emptyAddress = {
+  fullName: "",
+  phoneNumber: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "India",
+  isDefault: false,
+};
+
 function Checkout() {
   const { cartItems, clearCart } = useShop();
 
@@ -42,8 +54,13 @@ function Checkout() {
 
   const [showAddressForm, setShowAddressForm] = useState(false);
 
+  const [addressFormData, setAddressFormData] = useState(emptyAddress);
+
   const [paymentMethod, setPaymentMethod] = useState("cod");
 
+  const navigate = useNavigate();
+
+  // Calculate subtotal
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -55,38 +72,87 @@ function Checkout() {
 
   const total = subtotal + shipping + tax - discount;
 
-  const navigate = useNavigate();
+  // Handle address form input changes
+  const handleAddressInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
+    setAddressFormData((previous) => ({
+      ...previous,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  // Cancel address form
+  const handleCancelAddressForm = () => {
+    setAddressFormData(emptyAddress);
+    setShowAddressForm(false);
+  };
+
+  // Save new address
+  const handleSaveAddress = (e) => {
+    e.preventDefault();
+
+    const newAddressId = Date.now();
+
+    const newAddress = {
+      ...addressFormData,
+      id: newAddressId,
+    };
+
+    setAddresses((previous) => {
+      // If the new address is default,
+      // remove default status from existing addresses.
+      const updatedAddresses = addressFormData.isDefault
+        ? previous.map((address) => ({
+            ...address,
+            isDefault: false,
+          }))
+        : previous;
+
+      return [...updatedAddresses, newAddress];
+    });
+
+    // Automatically select the newly added address
+    setSelectedAddressId(newAddressId);
+
+    // Reset form
+    setAddressFormData(emptyAddress);
+
+    // Close form
+    setShowAddressForm(false);
+  };
+
+  // Place order
   const handlePlaceOrder = () => {
     // Check if cart is empty
     if (cartItems.length === 0) {
-        alert("Your cart is empty.");
-        return;
+      alert("Your cart is empty.");
+      return;
     }
 
     // Check if shipping address is selected
     if (!selectedAddressId) {
-        alert("Please select a shipping address.");
-        return;
+      alert("Please select a shipping address.");
+      return;
     }
 
     // Check if payment method is selected
     if (!paymentMethod) {
-        alert("Please select a payment method.");
-        return;
+      alert("Please select a payment method.");
+      return;
     }
 
     // Get selected address
     const selectedAddress = addresses.find(
-        (address) => address.id === selectedAddressId
+      (address) => address.id === selectedAddressId,
     );
 
     // Create frontend-only order information
     const orderData = {
-        orderNumber: `ORD-${Date.now()}`,
-        paymentMethod: paymentMethod,
-        total: total,
-        address: selectedAddress,
+      orderNumber: `ORD-${Date.now()}`,
+      paymentMethod: paymentMethod,
+      total: total,
+      address: selectedAddress,
     };
 
     // Clear cart
@@ -94,12 +160,11 @@ function Checkout() {
 
     // Navigate to order confirmation page
     navigate("/order-confirmation", {
-        state: {
+      state: {
         order: orderData,
-        },
+      },
     });
-};
-
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
@@ -229,6 +294,7 @@ function Checkout() {
                             {address.postalCode}
                           </p>
 
+                          {/* Country */}
                           <p className="mt-1 text-gray-600">
                             {address.country}
                           </p>
@@ -241,7 +307,7 @@ function Checkout() {
 
               {/* Add New Address Form */}
               {showAddressForm && (
-                <div>
+                <form onSubmit={handleSaveAddress}>
                   <h3 className="mb-5 text-lg font-semibold">
                     Add New Address
                   </h3>
@@ -255,8 +321,12 @@ function Checkout() {
 
                       <input
                         type="text"
+                        name="fullName"
+                        value={addressFormData.fullName}
+                        onChange={handleAddressInputChange}
                         placeholder="Enter your full name"
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                        required
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
 
@@ -268,8 +338,12 @@ function Checkout() {
 
                       <input
                         type="tel"
+                        name="phoneNumber"
+                        value={addressFormData.phoneNumber}
+                        onChange={handleAddressInputChange}
                         placeholder="Enter your phone number"
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                        required
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
 
@@ -281,8 +355,12 @@ function Checkout() {
 
                       <input
                         type="text"
+                        name="addressLine1"
+                        value={addressFormData.addressLine1}
+                        onChange={handleAddressInputChange}
                         placeholder="House number, street name"
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                        required
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
 
@@ -294,13 +372,17 @@ function Checkout() {
 
                       <input
                         type="text"
+                        name="addressLine2"
+                        value={addressFormData.addressLine2}
+                        onChange={handleAddressInputChange}
                         placeholder="Apartment, area, landmark"
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
 
                     {/* City / State */}
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      {/* City */}
                       <div>
                         <label className="mb-2 block text-sm font-medium">
                           City
@@ -308,11 +390,16 @@ function Checkout() {
 
                         <input
                           type="text"
+                          name="city"
+                          value={addressFormData.city}
+                          onChange={handleAddressInputChange}
                           placeholder="Enter city"
-                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                          required
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
 
+                      {/* State */}
                       <div>
                         <label className="mb-2 block text-sm font-medium">
                           State
@@ -320,14 +407,19 @@ function Checkout() {
 
                         <input
                           type="text"
+                          name="state"
+                          value={addressFormData.state}
+                          onChange={handleAddressInputChange}
                           placeholder="Enter state"
-                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                          required
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
 
                     {/* Postal Code / Country */}
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      {/* Postal Code */}
                       <div>
                         <label className="mb-2 block text-sm font-medium">
                           Postal Code
@@ -335,11 +427,16 @@ function Checkout() {
 
                         <input
                           type="text"
+                          name="postalCode"
+                          value={addressFormData.postalCode}
+                          onChange={handleAddressInputChange}
                           placeholder="Enter postal code"
-                          className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                          required
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
 
+                      {/* Country */}
                       <div>
                         <label className="mb-2 block text-sm font-medium">
                           Country
@@ -347,11 +444,27 @@ function Checkout() {
 
                         <input
                           type="text"
-                          value="India"
+                          name="country"
+                          value={addressFormData.country}
                           readOnly
                           className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3"
                         />
                       </div>
+                    </div>
+
+                    {/* Set as Default */}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        name="isDefault"
+                        checked={addressFormData.isDefault}
+                        onChange={handleAddressInputChange}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+
+                      <label className="text-sm font-medium text-gray-700">
+                        Set as default address
+                      </label>
                     </div>
                   </div>
 
@@ -359,21 +472,20 @@ function Checkout() {
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                     <button
                       type="button"
-                      onClick={() => setShowAddressForm(false)}
+                      onClick={handleCancelAddressForm}
                       className="rounded-lg border border-gray-300 px-5 py-3 font-medium hover:bg-gray-50"
                     >
                       Cancel
                     </button>
 
                     <button
-                      type="button"
-                      onClick={() => setShowAddressForm(false)}
+                      type="submit"
                       className="rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800"
                     >
                       Save Address
                     </button>
                   </div>
-                </div>
+                </form>
               )}
             </div>
 
@@ -635,3 +747,4 @@ function Checkout() {
 }
 
 export default Checkout;
+
